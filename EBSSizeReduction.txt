@@ -1,0 +1,31 @@
+lsblk
+mkfs.ext4 /dev/nvme1n1
+mkfs.xfs /dev/nvme1n1
+df -h /
+mkdir /mnt/newvol
+mkdir /mnt/snapshot
+mount /dev/nvme1n1 /mnt/newvol
+mount -t ext4 /dev/nvme0n1p1 /mnt/snapshot
+
+mount -t xfs  -o nouuid		Centos Command
+
+lsblk
+e2label /dev/nvme0n1p1
+e2label /dev/nvme1n1 cloudimg-rootfs
+e2label /dev/nvme1n1 /		Centos Command
+
+xfs_admin -L / /dev/nvme1n1 		Centos Command
+rsync -avx /mnt/snapshot/ /mnt/newvol/
+grub-install --root-directory=/mnt/newvol/ --force /dev/nvme1n1
+umount /mnt/newvol
+umount /mnt/snapshot
+e2fsck -f /dev/nvme1n1
+blkid
+tune2fs -U b24eb1ea-ab1c-47bd-8542-3fd6059814ae /dev/nvme1n1
+xfs_admin -U b24eb1ea-ab1c-47bd-8542-3fd6059814ae /dev/nvme1n1		Centos COmmand
+
+e2fsck -f /dev/nvme1n1
+tune2fs -O ^uninit_bg /dev/nvme1n1
+
+/dev/sda1
+/dev/xvda
